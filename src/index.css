@@ -24,4 +24,17 @@
   .nav-item-active {
     @apply bg-casino-gold/10 text-casino-gold-light border-l-4 border-casino-gold;
   }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-casino-gold/20 rounded-full;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-casino-gold/40;
+  }
 }

@@ -74,6 +74,13 @@ const DUMMY_TRANSACTIONS = [
     { id: "TX9904", user: "Lady Luck", type: "Deposit", amount: "+$1,000.00", date: "3 hours ago", status: "Success" },
 ];
 
+const DUMMY_NOTIFICATIONS = [
+    { id: 1, title: "Large Withdrawal Request", message: "User 'Harvey Specter' requested a $50,000 withdrawal.", time: "5 mins ago", type: "alert", unread: true },
+    { id: 2, title: "New Player Registration", message: "A new player has joined via Agent Sarah Valencia.", time: "12 mins ago", type: "info", unread: true },
+    { id: 3, title: "System Maintenance", message: "Scheduled maintenance in 2 hours for server upgrade.", time: "1 hour ago", type: "warning", unread: false },
+    { id: 4, title: "Security Alert", message: "Multiple failed login attempts from IP 192.168.1.102", time: "3 hours ago", type: "critical", unread: false },
+];
+
 // --- Reusable UI Components ---
 
 const SidebarItem = ({ icon: Icon, label, active, onClick, badge, isCollapsed }: any) => (
@@ -424,6 +431,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const renderContent = () => {
     if (activePanel === 'admin') {
@@ -612,10 +620,52 @@ export default function App() {
                   AGENT
                 </button>
               </div>
-            <button className="relative p-3 bg-white/5 rounded-full hover:bg-white/10 transition-all group flex-shrink-0">
-              <Bell size={20} className="text-slate-300 group-hover:text-casino-gold" />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.5)]"></span>
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className={`relative p-3 rounded-full transition-all group flex-shrink-0 ${showNotifications ? 'bg-casino-gold text-casino-deep' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}
+              >
+                <Bell size={20} className={showNotifications ? 'text-casino-deep' : 'group-hover:text-casino-gold'} />
+                <span className={`absolute top-2.5 right-2.5 w-2 h-2 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.5)] ${showNotifications ? 'bg-casino-deep' : 'bg-rose-500'}`}></span>
+              </button>
+
+              <AnimatePresence>
+                {showNotifications && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 mt-4 w-80 md:w-96 bg-[#0a2f1c] border border-casino-gold/20 rounded-2xl shadow-2xl z-[100] overflow-hidden"
+                  >
+                    <div className="p-4 border-b border-white/10 flex justify-between items-center bg-casino-gold/5">
+                      <h3 className="font-serif text-casino-gold">Notifications</h3>
+                      <span className="text-[10px] bg-casino-gold/20 text-casino-gold px-2 py-0.5 rounded-full font-bold">2 NEW</span>
+                    </div>
+                    <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                      {DUMMY_NOTIFICATIONS.map((notif) => (
+                        <div key={notif.id} className={`p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group ${notif.unread ? 'bg-casino-gold/5' : ''}`}>
+                          <div className="flex justify-between items-start mb-1">
+                            <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                              notif.type === 'critical' ? 'text-rose-400' : 
+                              notif.type === 'alert' ? 'text-amber-400' : 
+                              'text-emerald-400'
+                            }`}>
+                              {notif.type}
+                            </span>
+                            <span className="text-[9px] text-slate-500">{notif.time}</span>
+                          </div>
+                          <h4 className="text-sm font-bold text-slate-200 group-hover:text-casino-gold transition-colors">{notif.title}</h4>
+                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">{notif.message}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <button className="w-full p-3 text-[10px] font-bold text-casino-gold hover:bg-casino-gold/10 transition-colors uppercase tracking-[0.2em]">
+                      View All Activity
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </header>
 
