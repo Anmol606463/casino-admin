@@ -492,7 +492,7 @@ export default function App() {
             <div key={gi}>
               <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] mb-4">{group.title}</p>
               <div className="space-y-1 -mx-6">
-                {group.items.map((item) => (
+                {(group.items as any[]).map((item) => (
                   <SidebarItem 
                     key={item.id}
                     icon={item.icon} 
