@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-casino-deep text-slate-300 font-sans selection:bg-casino-gold selection:text-casino-deep;
+  }
+  
+  h1, h2, h3, h4 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-casino-surface/60 backdrop-blur-xl border border-casino-gold/20 rounded-2xl p-6 transition-all duration-300 hover:border-casino-gold/50 hover:shadow-gold-glow;
+  }
+  
+  .btn-gold {
+    @apply bg-gold-gradient text-casino-deep font-bold py-2 px-6 rounded-lg transition-all duration-300 hover:brightness-110 hover:shadow-gold-glow active:scale-95;
+  }
+  
+  .nav-item-active {
+    @apply bg-casino-gold/10 text-casino-gold-light border-l-4 border-casino-gold;
+  }
+}
