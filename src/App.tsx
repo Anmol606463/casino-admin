@@ -20,7 +20,10 @@ import {
   Lock,
   Activity,
   Eye,
-  Clock
+  Clock,
+  Menu,
+  X,
+  ChevronLeft
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -73,18 +76,19 @@ const DUMMY_TRANSACTIONS = [
 
 // --- Reusable UI Components ---
 
-const SidebarItem = ({ icon: Icon, label, active, onClick, badge }: any) => (
+const SidebarItem = ({ icon: Icon, label, active, onClick, badge, isCollapsed }: any) => (
   <button 
     onClick={onClick}
     className={`w-full flex items-center justify-between px-6 py-3 transition-all duration-300 group ${
       active ? 'nav-item-active' : 'text-slate-500 hover:text-casino-gold hover:bg-white/5'
-    }`}
+    } ${isCollapsed ? 'justify-center' : ''}`}
+    title={isCollapsed ? label : ''}
   >
-    <div className="flex items-center gap-4">
+    <div className={`flex items-center gap-4 ${isCollapsed ? 'justify-center' : ''}`}>
       <Icon size={18} className={active ? 'text-casino-gold' : 'group-hover:text-casino-gold'} />
-      <span className="font-medium text-sm tracking-wide">{label}</span>
+      {!isCollapsed && <span className="font-medium text-sm tracking-wide whitespace-nowrap">{label}</span>}
     </div>
-    {badge && (
+    {!isCollapsed && badge && (
       <span className="bg-casino-gold/20 text-casino-gold text-[10px] px-2 py-0.5 rounded-full font-bold">
         {badge}
       </span>
@@ -114,15 +118,15 @@ const StatCard = ({ title, value, trend, icon: Icon, color = "gold" }: any) => (
 
 const AdminDashboard = () => (
   <div className="space-y-8">
-    <div className="grid grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
       <StatCard title="Total Platform Revenue" value="$4,850,200" trend="+15.8%" icon={TrendingUp} />
       <StatCard title="Active Tables" value="42" trend="312 Online" icon={Monitor} color="emerald" />
       <StatCard title="24h Rake Volume" value="$128,420" trend="+12.2%" icon={Coins} />
       <StatCard title="Pending Settlements" value="26" trend="$182.1K" icon={CreditCard} />
     </div>
 
-    <div className="grid grid-cols-3 gap-6">
-      <div className="col-span-2 glass-card">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 glass-card">
         <div className="flex justify-between items-center mb-8">
           <h3 className="text-lg font-serif text-white">Platform Revenue & Rake Trends</h3>
           <div className="flex gap-2">
@@ -196,7 +200,8 @@ const UserManagement = () => (
                 </button>
             </div>
         </div>
-        <table className="w-full">
+        <div className="overflow-x-auto -mx-6 px-6">
+            <table className="w-full min-w-[800px]">
             <thead>
                 <tr className="text-left border-b border-white/10">
                     <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Identity</th>
@@ -245,15 +250,15 @@ const UserManagement = () => (
 
 const AgentDashboard = () => (
   <div className="space-y-8">
-    <div className="grid grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
       <StatCard title="My Player Pool" value="156" trend="+12" icon={Users} color="blue" />
       <StatCard title="Gross Earnings" value="$12,450" trend="+5.2%" icon={TrendingUp} />
       <StatCard title="Total Rake (Pool)" value="$4,120" trend="+14%" icon={Coins} />
       <StatCard title="Player Win Rate" value="68.4%" trend="Healthy" icon={Activity} color="emerald" />
     </div>
 
-    <div className="grid grid-cols-3 gap-6">
-      <div className="col-span-2 glass-card">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 glass-card">
         <div className="flex justify-between items-center mb-8">
           <h3 className="text-lg font-serif text-white">Commission Trends</h3>
           <div className="flex gap-2 text-[10px]">
@@ -348,8 +353,8 @@ const PlayerManagement = () => (
                 </button>
             </div>
         </div>
-        <div className="overflow-x-auto">
-            <table className="w-full">
+        <div className="overflow-x-auto -mx-6 px-6">
+            <table className="w-full min-w-[800px]">
                 <thead>
                     <tr className="text-left border-b border-white/10">
                         <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Player Identity</th>
@@ -416,6 +421,8 @@ const PlayerManagement = () => (
 export default function App() {
   const [activePanel, setActivePanel] = useState<'admin' | 'agent'>('admin');
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const renderContent = () => {
     if (activePanel === 'admin') {
@@ -478,20 +485,60 @@ export default function App() {
   const currentMenu = activePanel === 'admin' ? adminMenu : agentMenu;
 
   return (
-    <div className="flex min-h-screen font-sans bg-casino-deep">
+    <div className="flex min-h-screen font-sans bg-casino-deep text-slate-300">
+      {/* Mobile Backdrop */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <aside className="w-72 bg-[#052515] border-r border-casino-gold/10 flex flex-col fixed h-full z-50">
-        <div className="p-8">
-          <h1 className="text-2xl font-serif tracking-tighter text-casino-gold group cursor-pointer">
-            CASINO<span className="text-slate-100 font-light group-hover:text-casino-gold transition-colors">ROYALE</span>
-          </h1>
+      <aside className={`bg-[#052515] border-r border-casino-gold/10 flex flex-col fixed h-full z-[70] transition-all duration-300 ease-in-out ${
+        isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      } ${isCollapsed ? 'w-20' : 'w-72'}`}>
+        
+        {/* Sidebar Header */}
+        <div className={`p-8 flex items-center justify-between ${isCollapsed ? 'px-4' : ''}`}>
+          {!isCollapsed && (
+            <h1 className="text-2xl font-serif tracking-tighter text-casino-gold group cursor-pointer whitespace-nowrap">
+              CASINO<span className="text-slate-100 font-light group-hover:text-casino-gold transition-colors">ROYALE</span>
+            </h1>
+          )}
+          {isCollapsed && (
+            <div className="w-full flex justify-center">
+              <span className="text-xl font-serif text-casino-gold">CR</span>
+            </div>
+          )}
+          
+          <button 
+            onClick={() => setIsMobileOpen(false)}
+            className="lg:hidden p-2 text-slate-400 hover:text-white"
+          >
+            <X size={20} />
+          </button>
         </div>
+
+        {/* Desktop Collapse Toggle */}
+        <button 
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="hidden lg:flex absolute -right-3 top-24 w-6 h-6 bg-[#052515] border border-casino-gold/20 rounded-full items-center justify-center text-casino-gold hover:bg-casino-gold hover:text-casino-deep transition-all shadow-lg z-50"
+        >
+          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
 
         <nav className="flex-1 overflow-y-auto px-6 py-4 space-y-8 scrollbar-hide">
           {currentMenu.map((group, gi) => (
             <div key={gi}>
-              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] mb-4">{group.title}</p>
-              <div className="space-y-1 -mx-6">
+              {!isCollapsed && <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] mb-4">{group.title}</p>}
+              {isCollapsed && <div className="h-px bg-white/5 mb-4 mx-2" />}
+              <div className={`space-y-1 ${isCollapsed ? '-mx-2' : '-mx-6'}`}>
                 {(group.items as any[]).map((item) => (
                   <SidebarItem 
                     key={item.id}
@@ -499,7 +546,11 @@ export default function App() {
                     label={item.label} 
                     active={activeTab === item.id} 
                     badge={item.badge}
-                    onClick={() => setActiveTab(item.id)}
+                    isCollapsed={isCollapsed}
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      if (window.innerWidth < 1024) setIsMobileOpen(false);
+                    }}
                   />
                 ))}
               </div>
@@ -507,48 +558,60 @@ export default function App() {
           ))}
         </nav>
 
-        <div className="p-6 border-t border-white/5">
-          <div className="bg-white/5 rounded-2xl p-4 border border-white/10 flex items-center gap-4 group cursor-pointer hover:border-casino-gold/30 transition-all">
-            <div className="w-10 h-10 rounded-full bg-gold-gradient flex items-center justify-center text-casino-deep font-bold shadow-gold-glow">
+        <div className={`p-6 border-t border-white/5 ${isCollapsed ? 'px-4' : ''}`}>
+          <div className={`bg-white/5 rounded-2xl p-4 border border-white/10 flex items-center gap-4 group cursor-pointer hover:border-casino-gold/30 transition-all ${isCollapsed ? 'justify-center p-2' : ''}`}>
+            <div className={`w-10 h-10 rounded-full bg-gold-gradient flex items-center justify-center text-casino-deep font-bold shadow-gold-glow flex-shrink-0`}>
               {activePanel === 'admin' ? 'AD' : 'AG'}
             </div>
-            <div>
-              <p className="text-sm font-bold text-slate-200">{activePanel === 'admin' ? 'Admin Portal' : 'Agent Suite'}</p>
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider">Super Administrator</p>
-            </div>
+            {!isCollapsed && (
+              <div className="overflow-hidden">
+                <p className="text-sm font-bold text-slate-200 truncate">{activePanel === 'admin' ? 'Admin Portal' : 'Agent Suite'}</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider truncate">Super Administrator</p>
+              </div>
+            )}
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-72 p-10 min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-900/10 via-transparent to-transparent">
+      <main className={`flex-1 transition-all duration-300 p-6 lg:p-10 min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-900/10 via-transparent to-transparent ${
+        isCollapsed ? 'lg:ml-20' : 'lg:ml-72'
+      }`}>
         {/* Top Header */}
-        <header className="flex justify-between items-center mb-12">
-          <div className="relative w-96 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-casino-gold transition-colors" size={18} />
-            <input 
-              type="text" 
-              placeholder={activePanel === 'admin' ? "Search platform accounts..." : "Search my players..."}
-              className="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-casino-gold/50 transition-all placeholder:text-slate-600"
-            />
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <button 
+              onClick={() => setIsMobileOpen(true)}
+              className="lg:hidden p-2 bg-white/5 rounded-lg text-slate-300"
+            >
+              <Menu size={24} />
+            </button>
+            <div className="relative w-full md:w-96 group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-casino-gold transition-colors" size={18} />
+              <input 
+                type="text" 
+                placeholder={activePanel === 'admin' ? "Search platform accounts..." : "Search my players..."}
+                className="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-casino-gold/50 transition-all placeholder:text-slate-600"
+              />
+            </div>
           </div>
 
-          <div className="flex items-center gap-8">
-            <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 shadow-xl">
+          <div className="flex items-center justify-between w-full md:w-auto gap-4 md:gap-8">
+            <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 shadow-xl overflow-x-auto no-scrollbar">
                 <button 
                   onClick={() => { setActivePanel('admin'); setActiveTab('dashboard'); }}
-                  className={`px-6 py-2 rounded-lg text-[10px] font-bold tracking-widest transition-all ${activePanel === 'admin' ? 'bg-casino-gold text-casino-deep shadow-gold-glow' : 'text-slate-400 hover:text-white'}`}
+                  className={`px-4 md:px-6 py-2 rounded-lg text-[10px] font-bold tracking-widest transition-all whitespace-nowrap ${activePanel === 'admin' ? 'bg-casino-gold text-casino-deep shadow-gold-glow' : 'text-slate-400 hover:text-white'}`}
                 >
                   ADMIN
                 </button>
                 <button 
                   onClick={() => { setActivePanel('agent'); setActiveTab('dashboard'); }}
-                  className={`px-6 py-2 rounded-lg text-[10px] font-bold tracking-widest transition-all ${activePanel === 'agent' ? 'bg-casino-gold text-casino-deep shadow-gold-glow' : 'text-slate-400 hover:text-white'}`}
+                  className={`px-4 md:px-6 py-2 rounded-lg text-[10px] font-bold tracking-widest transition-all whitespace-nowrap ${activePanel === 'agent' ? 'bg-casino-gold text-casino-deep shadow-gold-glow' : 'text-slate-400 hover:text-white'}`}
                 >
                   AGENT
                 </button>
               </div>
-            <button className="relative p-3 bg-white/5 rounded-full hover:bg-white/10 transition-all group">
+            <button className="relative p-3 bg-white/5 rounded-full hover:bg-white/10 transition-all group flex-shrink-0">
               <Bell size={20} className="text-slate-300 group-hover:text-casino-gold" />
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.5)]"></span>
             </button>
@@ -565,10 +628,10 @@ export default function App() {
             transition={{ duration: 0.3 }}
           >
             <div className="mb-10">
-                <h2 className="text-4xl font-serif text-white mb-2 tracking-tight capitalize">
+                <h2 className="text-2xl md:text-4xl font-serif text-white mb-2 tracking-tight capitalize">
                     {activeTab.replace('_', ' ')}
                 </h2>
-                <div className="flex items-center gap-2 text-slate-500 text-xs">
+                <div className="flex items-center gap-2 text-slate-500 text-[10px] md:text-xs">
                     <span className="hover:text-casino-gold cursor-pointer transition-colors">Casino Royale</span>
                     <ChevronRight size={12} />
                     <span className="text-casino-gold/60 capitalize">{activePanel} Suite</span>
