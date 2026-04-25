@@ -79,13 +79,13 @@ const DUMMY_TRANSACTIONS = [
 const SidebarItem = ({ icon: Icon, label, active, onClick, badge, isCollapsed }: any) => (
   <button 
     onClick={onClick}
-    className={`w-full flex items-center justify-between px-6 py-3 transition-all duration-300 group ${
+    className={`w-full flex items-center transition-all duration-300 group ${
       active ? 'nav-item-active' : 'text-slate-500 hover:text-casino-gold hover:bg-white/5'
-    } ${isCollapsed ? 'justify-center' : ''}`}
+    } ${isCollapsed ? 'justify-center py-4 px-0' : 'justify-between py-3 px-6'}`}
     title={isCollapsed ? label : ''}
   >
-    <div className={`flex items-center gap-4 ${isCollapsed ? 'justify-center' : ''}`}>
-      <Icon size={18} className={active ? 'text-casino-gold' : 'group-hover:text-casino-gold'} />
+    <div className={`flex items-center ${isCollapsed ? 'justify-center w-full' : 'gap-4'}`}>
+      <Icon size={isCollapsed ? 22 : 18} className={active ? 'text-casino-gold' : 'group-hover:text-casino-gold'} />
       {!isCollapsed && <span className="font-medium text-sm tracking-wide whitespace-nowrap">{label}</span>}
     </div>
     {!isCollapsed && badge && (
@@ -202,47 +202,48 @@ const UserManagement = () => (
         </div>
         <div className="overflow-x-auto -mx-6 px-6">
             <table className="w-full min-w-[800px]">
-            <thead>
-                <tr className="text-left border-b border-white/10">
-                    <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Identity</th>
-                    <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Level</th>
-                    <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Balance</th>
-                    <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                    <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-                {DUMMY_USERS.map((user) => (
-                    <tr key={user.id} className="hover:bg-white/5 transition-colors group">
-                        <td className="py-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-casino-gold/20 flex items-center justify-center text-casino-gold font-bold text-xs uppercase">{user.name.charAt(0)}</div>
-                                <div>
-                                    <p className="text-sm font-bold text-slate-200">{user.name}</p>
-                                    <p className="text-[10px] text-slate-500">{user.email}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td className="py-4 text-xs text-slate-400">{user.role}</td>
-                        <td className="py-4 text-xs font-bold text-casino-gold-light">{user.balance}</td>
-                        <td className="py-4">
-                            <div className="flex flex-col gap-1">
-                                <span className={`w-fit text-[10px] px-2 py-0.5 rounded-full font-bold ${user.status === 'Active' ? 'bg-emerald-500/20 text-emerald-400' : user.status === 'Blocked' ? 'bg-rose-500/20 text-rose-400' : 'bg-white/10 text-slate-500'}`}>
-                                    {user.status}
-                                </span>
-                                <span className="text-[9px] text-slate-600 ml-1">{user.lastSeen}</span>
-                            </div>
-                        </td>
-                        <td className="py-4 text-right">
-                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button className="p-2 hover:bg-white/10 rounded-lg text-casino-gold" title="Edit"><Settings size={14} /></button>
-                                <button className="p-2 hover:bg-white/10 rounded-lg text-rose-400" title="Block"><Lock size={14} /></button>
-                            </div>
-                        </td>
+                <thead>
+                    <tr className="text-left border-b border-white/10">
+                        <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Identity</th>
+                        <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Level</th>
+                        <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Balance</th>
+                        <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                        <th className="pb-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
                     </tr>
-                ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                    {DUMMY_USERS.map((user) => (
+                        <tr key={user.id} className="hover:bg-white/5 transition-colors group">
+                            <td className="py-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-casino-gold/20 flex items-center justify-center text-casino-gold font-bold text-xs uppercase">{user.name.charAt(0)}</div>
+                                    <div>
+                                        <p className="text-sm font-bold text-slate-200">{user.name}</p>
+                                        <p className="text-[10px] text-slate-500">{user.email}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td className="py-4 text-xs text-slate-400">{user.role}</td>
+                            <td className="py-4 text-xs font-bold text-casino-gold-light">{user.balance}</td>
+                            <td className="py-4">
+                                <div className="flex flex-col gap-1">
+                                    <span className={`w-fit text-[10px] px-2 py-0.5 rounded-full font-bold ${user.status === 'Active' ? 'bg-emerald-500/20 text-emerald-400' : user.status === 'Blocked' ? 'bg-rose-500/20 text-rose-400' : 'bg-white/10 text-slate-500'}`}>
+                                        {user.status}
+                                    </span>
+                                    <span className="text-[9px] text-slate-600 ml-1">{user.lastSeen}</span>
+                                </div>
+                            </td>
+                            <td className="py-4 text-right">
+                                <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button className="p-2 hover:bg-white/10 rounded-lg text-casino-gold" title="Edit"><Settings size={14} /></button>
+                                    <button className="p-2 hover:bg-white/10 rounded-lg text-rose-400" title="Block"><Lock size={14} /></button>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     </div>
 );
 
@@ -533,12 +534,12 @@ export default function App() {
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
 
-        <nav className="flex-1 overflow-y-auto px-6 py-4 space-y-8 scrollbar-hide">
+        <nav className={`flex-1 overflow-y-auto py-4 space-y-8 scrollbar-hide ${isCollapsed ? 'px-0' : 'px-6'}`}>
           {currentMenu.map((group, gi) => (
             <div key={gi}>
               {!isCollapsed && <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em] mb-4">{group.title}</p>}
               {isCollapsed && <div className="h-px bg-white/5 mb-4 mx-2" />}
-              <div className={`space-y-1 ${isCollapsed ? '-mx-2' : '-mx-6'}`}>
+              <div className={`space-y-1 ${isCollapsed ? 'mx-0' : '-mx-6'}`}>
                 {(group.items as any[]).map((item) => (
                   <SidebarItem 
                     key={item.id}
@@ -558,7 +559,7 @@ export default function App() {
           ))}
         </nav>
 
-        <div className={`p-6 border-t border-white/5 ${isCollapsed ? 'px-4' : ''}`}>
+        <div className={`border-t border-white/5 ${isCollapsed ? 'p-2 py-6' : 'p-6'}`}>
           <div className={`bg-white/5 rounded-2xl p-4 border border-white/10 flex items-center gap-4 group cursor-pointer hover:border-casino-gold/30 transition-all ${isCollapsed ? 'justify-center p-2' : ''}`}>
             <div className={`w-10 h-10 rounded-full bg-gold-gradient flex items-center justify-center text-casino-deep font-bold shadow-gold-glow flex-shrink-0`}>
               {activePanel === 'admin' ? 'AD' : 'AG'}
